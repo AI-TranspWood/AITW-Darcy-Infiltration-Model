@@ -23,7 +23,7 @@ classifiers = [
 keywords = ["finite-elements", "darcy", "infiltration", "multiscale"]
 requires-python = ">=3.10"
 dependencies = [
-    "rich_click",
+    "rich_click>=1.9.0",
     "tqdm",
     "numpy",
 

@@ -13,11 +13,20 @@ from mpi4py import MPI
 from tqdm import tqdm
 from ufl import cos, dot, dx, erf, grad, pi, sqrt
 
-from .data import Params
+from .data import DarcyParams
 
 
-def run_simulation(parameters: Params):
+def run_simulation(parameters: DarcyParams, visualize: bool = False):
     """ Run the infiltration simulation with given parameters"""
+    io_node = MPI.COMM_WORLD.rank == 0
+    def mpi_print(msg):
+        if io_node:
+            print(msg)
+
+    # MPI + OpenMP info
+    threads = os.environ.get('OMP_NUM_THREADS', os.cpu_count())
+    mpi_print(f'Running infiltration simulation with {MPI.COMM_WORLD.size} MPI processes and {threads} OpenMP threads')
+
     label = parameters.label
     xmin = parameters.xmin
     xmax = parameters.xmax
@@ -52,12 +61,15 @@ def run_simulation(parameters: Params):
 
     # Output
     solution_file = f'{label}_solution.npy'   # Full solution
-    output_file = f'{label}_output.bp'        # VTX mesh for visualization
+    visualization_dir = f'{label}_output.bp'        # VTX mesh for visualization
 
-    # Ensure output directory exists
+    # Ensure output directory exist
+    if os.path.exists(output_dir):
+        mpi_print(f'Output directory {output_dir} already exists. Files may be overwritten.')
+
     os.makedirs(output_dir, exist_ok=True)
     solution_file = os.path.join(output_dir, solution_file)
-    output_file = os.path.join(output_dir, output_file)
+    visualization_dir = os.path.join(output_dir, visualization_dir)
     log_file = os.path.join(output_dir, f'{label}.log')
 
     # Save input parameters to output directory for reproducibility
@@ -65,6 +77,7 @@ def run_simulation(parameters: Params):
     parameters.to_json(reprod_file)
 
     log.set_output_file(log_file)
+    mpi_print(f'Log file: {log_file}')
     log.set_log_level(log.LogLevel.INFO)
 
     # Helper functions
@@ -177,7 +190,7 @@ def run_simulation(parameters: Params):
 
     S_func = fem.Function(V, name='S')
 
-    with io.VTXWriter(domain.comm, output_file, [u, S_func]) as vtxfile:
+    def loop(visualize=visualize):
         while True:
             u_n.x.array[:] = u.x.array
 
@@ -212,7 +225,8 @@ def run_simulation(parameters: Params):
 
             # Save output
             S_func.interpolate(fem.Expression(S, V.element.interpolation_points()))
-            vtxfile.write(t.value.item())
+            if visualize:
+                vtxfile.write(t.value.item())
 
             # Termination criterion
             if t.value > t_end:
@@ -227,6 +241,16 @@ def run_simulation(parameters: Params):
                 can_stop = all(statuses)
             if domain.comm.bcast(can_stop, root=0):
                 break
+
+        mpi_print(f'Simulation finished at t = {t.value.item()}')
+
+    mpi_print(f'Writing solution to {solution_file}')
+    if visualize:
+        mpi_print(f'Writing files for VTX mesh visualization to {visualization_dir}')
+        with io.VTXWriter(domain.comm, visualization_dir, [u, S_func]) as vtxfile:
+            loop(visualize=True)
+    else:
+        loop(visualize=False)
 
     # Numpy array output for single parallel runs
     if domain.comm.size == 1:
