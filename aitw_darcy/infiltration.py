@@ -1,4 +1,5 @@
 """Module for running infiltration simulation using Darcy's law."""
+import json
 import os
 
 import numpy as np
@@ -68,13 +69,10 @@ def run_simulation(parameters: DarcyParams, visualize: bool = False):
         mpi_print(f'Output directory {output_dir} already exists. Files may be overwritten.')
 
     os.makedirs(output_dir, exist_ok=True)
+    json_file = os.path.join(output_dir, f'{label}.json')
     solution_file = os.path.join(output_dir, solution_file)
     visualization_dir = os.path.join(output_dir, visualization_dir)
     log_file = os.path.join(output_dir, f'{label}.log')
-
-    # Save input parameters to output directory for reproducibility
-    reprod_file = os.path.join(output_dir, f'reprod.json')
-    parameters.to_json(reprod_file)
 
     log.set_output_file(log_file)
     mpi_print(f'Log file: {log_file}')
@@ -190,6 +188,11 @@ def run_simulation(parameters: DarcyParams, visualize: bool = False):
 
     S_func = fem.Function(V, name='S')
 
+    output_data = {
+        # Store the input parameters for reproducibility
+        'input_parameters': parameters.to_dict(),
+    }
+
     def loop(visualize=visualize):
         while True:
             u_n.x.array[:] = u.x.array
@@ -242,9 +245,10 @@ def run_simulation(parameters: DarcyParams, visualize: bool = False):
             if domain.comm.bcast(can_stop, root=0):
                 break
 
-        mpi_print(f'Simulation finished at t = {t.value.item()}')
+        saturation_time = t.value.item()
+        mpi_print(f'Simulation finished at t = {saturation_time}')
+        output_data['sat_time'] = saturation_time
 
-    mpi_print(f'Writing solution to {solution_file}')
     if visualize:
         mpi_print(f'Writing files for VTX mesh visualization to {visualization_dir}')
         with io.VTXWriter(domain.comm, visualization_dir, [u, S_func]) as vtxfile:
@@ -252,7 +256,12 @@ def run_simulation(parameters: DarcyParams, visualize: bool = False):
     else:
         loop(visualize=False)
 
+    mpi_print(f'Writing output data to {json_file}')
+    with open(json_file, 'w') as f:
+        json.dump(output_data, f, indent=4)
+
     # Numpy array output for single parallel runs
+    mpi_print(f'Writing solution to {solution_file}')
     if domain.comm.size == 1:
         sol = np.array(sol)
         np.save(solution_file, sol)

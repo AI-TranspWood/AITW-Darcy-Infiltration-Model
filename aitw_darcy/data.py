@@ -46,11 +46,16 @@ class JsonParams:
 
     def to_json(self, json_file: str):
         """Save the parameters to a JSON file"""
-        data = {k: v for k, v in self.__dict__.items() if not k.startswith('_')}
+        data = self.to_dict()
         data = self._to_json(data)
 
         with open(json_file, 'w') as f:
             json.dump(data, f, indent=4)
+
+    def to_dict(self) -> dict:
+        """Convert the parameters to a dictionary"""
+        data = {k: v for k, v in self.__dict__.items() if not k.startswith('_')}
+        return data
 
     @classmethod
     def from_json(cls, json_file: str) -> list[Self]:
