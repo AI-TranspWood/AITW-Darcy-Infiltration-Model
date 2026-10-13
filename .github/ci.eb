@@ -24,7 +24,7 @@ exts_list = [
     }),
     (name, version, {
         'modulename': 'aitw_darcy',
-        'source_urls': ['https://github.com/AI-TranspWood/AITW-Darcy-Infiltration-Model'],
+        'source_urls': ['https://github.com/AI-TranspWood/AITW-Darcy-Infiltration-Model/archive/'],
         'sources': [{
             'download_filename': '%(software_commit)s.tar.gz',
             'filename': '%(software_commit)s.tar.gz',
