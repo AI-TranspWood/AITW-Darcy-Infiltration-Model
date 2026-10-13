@@ -1,0 +1,35 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "aitw_darcy/**"
+      - "pyproject.toml"
+      - ".github/workflows/ci.yml"
+      - "examples/**"
+      - "tests/**"
+  pull_request:
+
+concurrency:
+  group: ${{format('{0}:{1}:{2}', github.repository, github.ref, github.workflow)}}
+  cancel-in-progress: true
+
+jobs:
+  test-eessi:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up EESSI environment
+        uses: eessi/github-action-eessi@v3
+        with:
+          eessi_stack_version: '2023.06'
+
+      - name: Test building with EESSI
+        run: |
+          module load EESSI-extend
+          unset EASYBUILD_DEBUG
+          eb --logtostdout --software-commit=$GITHUB_SHA .github/ci.eb

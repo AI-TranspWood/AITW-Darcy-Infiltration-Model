@@ -183,7 +183,7 @@ class DarcyParams(JsonParams):
     # label: str = '3d_plate'
     label: str = field(
         default='3d_plate',
-        metadata={'help': 'Label for the simulation', 'group': 'IO'}
+        metadata={'help': 'Label for the simulation used in the output files name', 'group': 'IO'}
     )
     output_dir: str = field(
         default='output',

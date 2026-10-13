@@ -37,6 +37,9 @@ dependencies = [
 Source = "https://github.com/VTT-ProperTune/AITW-Darcy-Infiltration-Model"
 
 [project.optional-dependencies]
+tests = [
+    "pytest",
+]
 pre-commit = [
     "pre-commit",
 ]
