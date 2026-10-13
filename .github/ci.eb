@@ -12,6 +12,7 @@ porous materials using the FEniCSx finite element framework.
 toolchain = {'name': 'foss', 'version': '2023b'}
 
 dependencies = [
+    ('tqdm', '4.66.2'),
     ('Python', '3.11.5'),
     ('SciPy-bundle', '2023.11'),
     ('FEniCS-DOLFINx-Python', '0.9.0'),
