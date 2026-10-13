@@ -180,7 +180,6 @@ class JsonParams:
 @dataclass(kw_only=True)
 class DarcyParams(JsonParams):
     # Label for the simulation
-    # label: str = '3d_plate'
     label: str = field(
         default='3d_plate',
         metadata={'help': 'Label for the simulation used in the output files name', 'group': 'IO'}
@@ -191,30 +190,29 @@ class DarcyParams(JsonParams):
     )
 
     # Mesh dimensions (m)
-    # xmin: float = 0
     xmin: float = field(
         default=0,
-        metadata={'help': 'Minimum x-coordinate of the mesh', 'group': 'Mesh'}
+        metadata={'help': 'Minimum x-coordinate of the mesh (m)', 'group': 'Mesh'}
     )
     xmax: float = field(
         default=5e-2,
-        metadata={'help': 'Maximum x-coordinate of the mesh', 'group': 'Mesh'}
+        metadata={'help': 'Maximum x-coordinate of the mesh (m)', 'group': 'Mesh'}
     )
     ymin: float = field(
         default=0,
-        metadata={'help': 'Minimum y-coordinate of the mesh', 'group': 'Mesh'}
+        metadata={'help': 'Minimum y-coordinate of the mesh (m)', 'group': 'Mesh'}
     )
     ymax: float = field(
         # default=5e-2,
-        metadata={'help': 'Maximum y-coordinate of the mesh', 'group': 'Mesh'}
+        metadata={'help': 'Maximum y-coordinate of the mesh (m)', 'group': 'Mesh'}
     )
     zmin: float = field(
         default=0,
-        metadata={'help': 'Minimum z-coordinate of the mesh', 'group': 'Mesh'}
+        metadata={'help': 'Minimum z-coordinate of the mesh (m)', 'group': 'Mesh'}
     )
     zmax: float = field(
         default=1e-3,
-        metadata={'help': 'Maximum z-coordinate of the mesh', 'group': 'Mesh'}
+        metadata={'help': 'Maximum z-coordinate of the mesh (m)', 'group': 'Mesh'}
     )
     # Number of nodes
     nx: int = field(
@@ -232,7 +230,6 @@ class DarcyParams(JsonParams):
 
     # Timestepping
     # Initial time step length (s)
-    # delta_t0: float = 1e-1
     delta_t0: float = field(
         default=1e-1,
         metadata={'help': 'Initial time step length (s)', 'group': 'Time Stepping', 'min': 1e-10}

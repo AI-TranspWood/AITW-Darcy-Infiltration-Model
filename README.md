@@ -4,6 +4,10 @@ This project contains code for simulating infiltration processes in porous mater
 
 ## Install
 
+> [!NOTE] External Requirements
+> Requires a working installation of `fenics-dolfinx==0.9.0` (see https://fenicsproject.org/download/) -
+> Main FEniCS library + Python bindings.
+
 ```bash
 cd <PATH to folder with pyproject.toml>
 pip install .
@@ -24,12 +28,6 @@ The simulation models capillary infiltration in porous media using:
 - **Material properties**: Porosity, permeability (anisotropic), pore radius distribution
 - **Solver**: Newton-Raphson with adaptive timestepping
 - **Output**: VTX files for visualization and numpy arrays for data analysis
-
-## External Requirements
-
-Packages not installable via `pip`:
-
-- `fenics-dolfinx==0.9.0` - Main FEniCS library + Python bindings
 
 ## Usage
 
@@ -53,12 +51,12 @@ The installation will make available a `aitw-darcy` command line interface.
 
 - Run `aitw-darcy --help` to see the available commands.
 - Run `aitw-darcy infiltration --help` to see all available options for running the simulation.
-- Run `aitw-darcy infiltration INPUT_JSON_FILE` to run the simulation using the parameters in `JSON_FILE`.
+- Run `aitw-darcy infiltration --config-file INPUT_JSON_FILE` to run the simulation using the parameters in `JSON_FILE`.
 
 Example with the provided parameter file:
 
 ```bash
-aitw-darcy infiltration example/input.json
+aitw-darcy infiltration --config-file examples/small.json
 ```
 
 #### Tab autocompletion
@@ -68,19 +66,19 @@ Enabling tab autocompletion https://click.palletsprojects.com/en/stable/shell-co
 E.G for `bash` run the command
 
 ```bash
-eval "$(_AITW_DARCY_MS_COMPLETE=bash_source aitw-darcy)"
+eval "$(_AITW_DARCY_COMPLETE=bash_source aitw-darcy)"
 ```
 
 You can also add it to either `~/.bashrc` or, if you are using a virtual environment, to `bin/activate` of the virtual environment to avoid running the command for every new shell.
 
 ## Output
 
-The simulation generates the following output files in the specified output directory:
+The simulation generates the following output files in the specified output directory `{output_dir}`:
 
 - `{label}_solution.npy` - Complete solution array for analysis
 - `{label}_output.bp` - VTX mesh files for ParaView visualization
 - `{label}.log` - Simulation log file
-- `reprod.json` - Copy of the input parameters for reproducibility
+- `{label}.json` - Copy of the input parameters for reproducibility + final saturation time
 
 where `{label}` is defined in the input parameters.
 
