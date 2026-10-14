@@ -172,7 +172,7 @@ class JsonParams:
             '--config-file', type=click.Path(exists=True), help='Path to file with parameters'
         )(func)
 
-        for group in sorted(groups, key=lambda x: (x != 'Options', x))[::-1]:
+        for group in sorted(groups, key=lambda x: (x != 'Options', x == 'Advanced', x))[::-1]:
             func = click.option_panel(group)(func)
 
         return func
@@ -192,27 +192,27 @@ class DarcyParams(JsonParams):
     # Mesh dimensions (m)
     xmin: float = field(
         default=0,
-        metadata={'help': 'Minimum x-coordinate of the mesh (m)', 'group': 'Mesh'}
+        metadata={'help': 'Minimum x-coordinate of the mesh (m)', 'group': 'Geometry'}
     )
     xmax: float = field(
         default=5e-2,
-        metadata={'help': 'Maximum x-coordinate of the mesh (m)', 'group': 'Mesh'}
+        metadata={'help': 'Maximum x-coordinate of the mesh (m)', 'group': 'Geometry'}
     )
     ymin: float = field(
         default=0,
-        metadata={'help': 'Minimum y-coordinate of the mesh (m)', 'group': 'Mesh'}
+        metadata={'help': 'Minimum y-coordinate of the mesh (m)', 'group': 'Geometry'}
     )
     ymax: float = field(
         # default=5e-2,
-        metadata={'help': 'Maximum y-coordinate of the mesh (m)', 'group': 'Mesh'}
+        metadata={'help': 'Maximum y-coordinate of the mesh (m)', 'group': 'Geometry'}
     )
     zmin: float = field(
         default=0,
-        metadata={'help': 'Minimum z-coordinate of the mesh (m)', 'group': 'Mesh'}
+        metadata={'help': 'Minimum z-coordinate of the mesh (m)', 'group': 'Geometry'}
     )
     zmax: float = field(
         default=1e-3,
-        metadata={'help': 'Maximum z-coordinate of the mesh (m)', 'group': 'Mesh'}
+        metadata={'help': 'Maximum z-coordinate of the mesh (m)', 'group': 'Geometry'}
     )
     # Number of nodes
     nx: int = field(
@@ -236,16 +236,34 @@ class DarcyParams(JsonParams):
     )
     delta_tmin: float = field(
         default=1e-2,
-        metadata={'help': 'Minimum time step length (s)', 'group': 'Time Stepping', 'min': 1e-10}
+        metadata={
+            'help': (
+                'Minimum time step length (s). '
+                'Hard constraint that will stop the simulation if the dynamic time step decreases below this value. '
+            ),
+            'group': 'Advanced', 'min': 1e-10
+        }
     )
     delta_tmax: float = field(
         default=10,
-        metadata={'help': 'Maximum time step length (s)', 'group': 'Time Stepping', 'min': 1e-10}
+        metadata={
+            'help': (
+                'Maximum time step length (s). '
+                'Soft constraint that will stop the dynamic time step from increasing more than this value. '
+            ),
+            'group': 'Advanced', 'min': 1e-10
+        }
     )
     # Simulation time (s)
     t_end: float = field(
         default=120,
-        metadata={'help': 'Simulation time (s)', 'group': 'Time Stepping', 'min': 1e-10}
+        metadata={
+            'help': (
+                'Maximum simulation time (s). '
+                'The simulation will stop when this time is reached even if saturation has not been achieved.',
+            ),
+            'group': 'Time Stepping', 'min': 1e-10
+        }
     )
 
     # Porosity
