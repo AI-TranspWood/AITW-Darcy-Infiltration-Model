@@ -260,7 +260,7 @@ class DarcyParams(JsonParams):
         metadata={
             'help': (
                 'Maximum simulation time (s). '
-                'The simulation will stop when this time is reached even if saturation has not been achieved.',
+                'The simulation will stop when this time is reached even if saturation has not been achieved.'
             ),
             'group': 'Time Stepping', 'min': 1e-10
         }
