@@ -59,6 +59,23 @@ Example with the provided parameter file:
 aitw-darcy infiltration --config-file examples/small.json
 ```
 
+### Using multiple processes
+
+The code supports parallel execution using MPI. To run the simulation with multiple processes, use `mpirun` or `mpiexec`:
+
+```bash
+mpirun -np 4 aitw-darcy infiltration --config-file examples/small.json
+```
+
+Also make sure to set the `OMP_NUM_THREADS` environment variable to control the number of threads per process.
+If left unset it is possible that the simulation will use all available threads on the machine, which may lead to performance degradation.
+For example, to use 4 processes with 2 threads each:
+
+```bash
+export OMP_NUM_THREADS=2
+mpirun -np 4 aitw-darcy infiltration --config-file examples/small.json
+```
+
 #### Tab autocompletion
 
 Enabling tab autocompletion https://click.palletsprojects.com/en/stable/shell-completion/
