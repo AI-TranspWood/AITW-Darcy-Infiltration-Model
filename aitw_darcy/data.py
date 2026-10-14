@@ -1,11 +1,16 @@
 import json
 from collections.abc import Callable
-from copy import copy
 from dataclasses import dataclass, field, fields
-from typing import ClassVar, Self
+from typing import ClassVar
 
 import rich_click as click
 from click.core import ParameterSource
+
+try:
+    from typing import Self
+except ImportError:
+    from typing import TypeVar
+    Self = TypeVar('Self', bound='JsonParams')
 
 
 class DelimitedList(click.ParamType):
