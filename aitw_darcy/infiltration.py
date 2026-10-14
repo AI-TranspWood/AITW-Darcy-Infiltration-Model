@@ -22,7 +22,7 @@ def run_simulation(parameters: DarcyParams, visualize: bool = False):
     io_node = MPI.COMM_WORLD.rank == 0
     def mpi_print(msg):
         if io_node:
-            print(msg)
+            print('\n' + msg)
 
     # MPI + OpenMP info
     threads = os.environ.get('OMP_NUM_THREADS', os.cpu_count())
@@ -233,7 +233,11 @@ def run_simulation(parameters: DarcyParams, visualize: bool = False):
 
             # Termination criterion
             if t.value > t_end:
-                break
+                mpi_print(
+                    f'WARNING: Maximum simulation time reached at t = {t.value.item()}. '
+                    'Simulation terminated before saturation was achieved.'
+                )
+                return
 
             S_threshold = 0.99
             S_vals = get_variable_value(S)
@@ -247,14 +251,17 @@ def run_simulation(parameters: DarcyParams, visualize: bool = False):
 
         saturation_time = t.value.item()
         mpi_print(f'Simulation finished at t = {saturation_time}')
+        return saturation_time
         output_data['sat_time'] = saturation_time
 
     if visualize:
         mpi_print(f'Writing files for VTX mesh visualization to {visualization_dir}')
         with io.VTXWriter(domain.comm, visualization_dir, [u, S_func]) as vtxfile:
-            loop(visualize=True)
+            sat_time = loop(visualize=True)
     else:
-        loop(visualize=False)
+        sat_time = loop(visualize=False)
+
+    output_data['sat_time'] = sat_time
 
     mpi_print(f'Writing output data to {json_file}')
     with open(json_file, 'w') as f:
