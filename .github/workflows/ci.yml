@@ -27,20 +27,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # - name: Cache Python dependencies
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ~/.cache/pip
-      #     key: pip-${{ matrix.python-version }}-tests-${{ hashFiles('**/pyproject.toml') }}
-      #     restore-keys: pip-${{ matrix.python-version }}-tests
-
-      # - name: Set up Python ${{ matrix.python-version }}
-      #   uses: actions/setup-python@v3
-      #   with:
-      #     python-version: ${{ matrix.python-version }}
-
       - name: Cache conda
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: ~/conda_pkgs_cache
           key: conda-${{ matrix.python-version }}-tests-${{ hashFiles('.github/workflows/ci.yml') }}
@@ -50,10 +38,8 @@ jobs:
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v2
         with:
-          auto-update-conda: true
           python-version: ${{ matrix.python-version }}
           activate-environment: dolfinx-env
-          environment-file: environment.yml
           pkg-dirs: ~/conda_pkgs_cache
           use-mamba: true
 
