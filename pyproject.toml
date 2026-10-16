@@ -5,7 +5,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 # See https://www.python.org/dev/peps/pep-0621/
-name = "AITW_darcy_infiltration"
+name = "AITW-darcy_infiltration"
 dynamic = ["version"]
 description = "Code for simulating infiltration processes in porous materials using the FEniCSx finite element framework."
 authors = [
