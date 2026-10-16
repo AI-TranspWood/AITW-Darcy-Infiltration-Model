@@ -76,6 +76,12 @@ export OMP_NUM_THREADS=2
 mpirun -np 4 aitw-darcy infiltration --config-file examples/small.json --visualize
 ```
 
+Running with a low number of threads 1/2/4 is recommended for best performance.
+Testing the scaling of the code for your specific input is recommended before running large simulations.
+
+Running with too many MPI ranks could lead to MPI errors due to the small number of mesh elements per rank.
+If you encounter such errors, try reducing the number of MPI ranks.
+
 #### Tab autocompletion
 
 Enabling tab autocompletion https://click.palletsprojects.com/en/stable/shell-completion/
@@ -93,12 +99,18 @@ You can also add it to either `~/.bashrc` or, if you are using a virtual environ
 The simulation generates the following output files in the specified output directory `{output_dir}`:
 
 - `{label}_solution.npy` - Complete solution array for analysis
-- `{label}_output_S.xdmf` - XDMF file for S visualization (can be opened in [ParaView](https://www.paraview.org/))
-- `{label}_output_u.xdmf` - XDMF file for u visualization (can be opened in [ParaView](https://www.paraview.org/))
+- `{label}_output_S.xdmf` - XDMF file for S visualization.
+- `{label}_output_S.h5` - HDF5 that contains the actual data for S. Needs to be in the same directory as the XDMF file for visualization in ParaView.
+- `{label}_output_u.xdmf` - XDMF file for u visualization.
+- `{label}_output_u.h5` - HDF5 that contains the actual data for u. Needs to be in the same directory as the XDMF file for visualization in ParaView.
 - `{label}.log` - Simulation log file
 - `{label}.json` - Copy of the input parameters for reproducibility + final saturation time if achieved (null otherwise)
 
 where `{label}` is defined in the input parameters.
+
+The XDMF files can be opened in [ParaView](https://www.paraview.org/) for visualization of the saturation and velocity fields.
+The HDF5 files contain the actual data and must be in the same directory as the XDMF files for proper visualization.
+THe `Xdmf3 Reader S` is suggested to be used when opening the XDMF files in ParaView.
 
 ## Parameters
 
