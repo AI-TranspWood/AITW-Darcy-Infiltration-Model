@@ -15,10 +15,12 @@ def test_cli_infiltration(small_input_path, tmp_path):
            'infiltration',
             '--config-file', small_input_path,
             '--output_dir', str(tmp_path),
+            '--visualize',
         ]
     )
     assert result.exit_code == 0
     assert os.path.exists(tmp_path / f'{label}_solution.npy')
-    assert not os.path.exists(tmp_path / f'{label}_output.bp')
     assert os.path.exists(tmp_path / f'{label}.log')
     assert os.path.exists(tmp_path / f'{label}.json')
+    assert os.path.exists(tmp_path / f'{label}_output_S.xdmf')
+    assert os.path.exists(tmp_path / f'{label}_output_u.xdmf')

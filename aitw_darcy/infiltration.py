@@ -62,7 +62,6 @@ def run_simulation(parameters: DarcyParams, visualize: bool = False):
 
     # Output
     solution_file = f'{label}_solution.npy'   # Full solution
-    visualization_dir = f'{label}_output.bp'        # VTX mesh for visualization
 
     # Ensure output directory exist
     if os.path.exists(output_dir):
@@ -73,7 +72,6 @@ def run_simulation(parameters: DarcyParams, visualize: bool = False):
 
     json_file = os.path.join(output_dir, f'{label}.json')
     solution_file = os.path.join(output_dir, solution_file)
-    visualization_dir = os.path.join(output_dir, visualization_dir)
     log_file = os.path.join(output_dir, f'{label}.log')
 
     log.set_output_file(log_file)
@@ -195,7 +193,7 @@ def run_simulation(parameters: DarcyParams, visualize: bool = False):
         'input_parameters': parameters.to_dict(),
     }
 
-    def loop(visualize=visualize):
+    def loop(writer=None):
         while True:
             u_n.x.array[:] = u.x.array
 
@@ -230,8 +228,8 @@ def run_simulation(parameters: DarcyParams, visualize: bool = False):
 
             # Save output
             S_func.interpolate(fem.Expression(S, V.element.interpolation_points()))
-            if visualize:
-                vtxfile.write(t.value.item())
+            if writer:
+                writer(t.value.item())
 
             # Termination criterion
             if t.value > t_end:
@@ -254,14 +252,25 @@ def run_simulation(parameters: DarcyParams, visualize: bool = False):
         saturation_time = t.value.item()
         mpi_print(f'Simulation finished at t = {saturation_time}')
         return saturation_time
-        output_data['sat_time'] = saturation_time
 
     if visualize:
-        mpi_print(f'Writing files for VTX mesh visualization to {visualization_dir}')
-        with io.VTXWriter(domain.comm, visualization_dir, [u, S_func]) as vtxfile:
-            sat_time = loop(visualize=True)
+        s_xdmf_file = os.path.join(output_dir, f'{label}_output_S.xdmf')
+        u_xdmf_file = os.path.join(output_dir, f'{label}_output_u.xdmf')
+        mpi_print(f'Writing visualization file for S to `{s_xdmf_file}`')
+        mpi_print(f'Writing visualization file for u to `{u_xdmf_file}`')
+
+        with (
+                io.XDMFFile(domain.comm, s_xdmf_file, 'w') as xdmf_S,
+                io.XDMFFile(domain.comm, u_xdmf_file, 'w') as xdmf_u,
+            ):
+            xdmf_S.write_mesh(domain)
+            xdmf_u.write_mesh(domain)
+            def write_xdmf(t):
+                xdmf_S.write_function(S_func, t)
+                xdmf_u.write_function(u, t)
+            sat_time = loop(writer=write_xdmf)
     else:
-        sat_time = loop(visualize=False)
+        sat_time = loop(writer=None)
 
     output_data['sat_time'] = sat_time
 
