@@ -1,2 +1,2 @@
-"""AITW Darcy Module TODO: improve description"""
-__version__ = '0.1.0'
+"""AITW Darcy Module"""
+__version__ = '1.0.0'
