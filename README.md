@@ -73,7 +73,7 @@ For example, to use 4 processes with 2 threads each:
 
 ```bash
 export OMP_NUM_THREADS=2
-mpirun -np 4 aitw-darcy infiltration --config-file examples/small.json
+mpirun -np 4 aitw-darcy infiltration --config-file examples/small.json --visualize
 ```
 
 #### Tab autocompletion
@@ -93,9 +93,10 @@ You can also add it to either `~/.bashrc` or, if you are using a virtual environ
 The simulation generates the following output files in the specified output directory `{output_dir}`:
 
 - `{label}_solution.npy` - Complete solution array for analysis
-- `{label}_output.bp` - VTX mesh files for ParaView visualization
+- `{label}_output_S.xdmf` - XDMF file for S visualization (can be opened in [ParaView](https://www.paraview.org/))
+- `{label}_output_u.xdmf` - XDMF file for u visualization (can be opened in [ParaView](https://www.paraview.org/))
 - `{label}.log` - Simulation log file
-- `{label}.json` - Copy of the input parameters for reproducibility + final saturation time
+- `{label}.json` - Copy of the input parameters for reproducibility + final saturation time if achieved (null otherwise)
 
 where `{label}` is defined in the input parameters.
 
