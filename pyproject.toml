@@ -1,0 +1,59 @@
+[build-system]
+# build the package with [flit](https://flit.readthedocs.io)
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+# See https://www.python.org/dev/peps/pep-0621/
+name = "AITW_darcy_infiltration"
+dynamic = ["version"]
+description = "Code for simulating infiltration processes in porous materials using the FEniCSx finite element framework."
+authors = [
+    { name = "Royson Donate Dsouza" }
+]
+readme = "README.md"
+license = { file = "LICENSE" }
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Programming Language :: Python",
+]
+keywords = ["finite-elements", "darcy", "infiltration", "multiscale"]
+requires-python = ">=3.10"
+dependencies = [
+    "rich_click>=1.9.0",
+    "tqdm",
+    "numpy",
+
+    "mpi4py",
+    "petsc4py",
+    "fenics-ufl",
+    "fenics-basix==0.9.0",
+]
+
+[project.urls]
+Source = "https://github.com/VTT-ProperTune/AITW-Darcy-Infiltration-Model"
+
+[project.optional-dependencies]
+tests = [
+    "pytest",
+]
+pre-commit = [
+    "pre-commit",
+]
+release = [
+    "flit"
+]
+
+[project.scripts]
+aitw-darcy = "aitw_darcy.cli:cmd_root"
+
+[tool.flit.module]
+name = "aitw_darcy"
+
+[tool.flit.sdist]
+exclude = [
+    ".gitignore", ".github", ".pre-commit-config.yaml",
+]
