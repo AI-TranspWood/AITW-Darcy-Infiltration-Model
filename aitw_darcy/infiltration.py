@@ -67,8 +67,10 @@ def run_simulation(parameters: DarcyParams, visualize: bool = False):
     # Ensure output directory exist
     if os.path.exists(output_dir):
         mpi_print(f'Output directory {output_dir} already exists. Files may be overwritten.')
+    if io_node:
+        os.makedirs(output_dir, exist_ok=True)
+    MPI.COMM_WORLD.barrier()
 
-    os.makedirs(output_dir, exist_ok=True)
     json_file = os.path.join(output_dir, f'{label}.json')
     solution_file = os.path.join(output_dir, solution_file)
     visualization_dir = os.path.join(output_dir, visualization_dir)

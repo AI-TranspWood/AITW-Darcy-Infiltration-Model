@@ -128,10 +128,11 @@ class JsonParams:
                     cls_typ = click.FloatRange if typ == float else click.IntRange
                     typ = cls_typ(min=min_val, max=max_val)
             elif typ == str:
+                exists = metadata.get('exists', True)
                 if metadata.get('file', False):
-                    typ = click.Path(exists=True, dir_okay=False, readable=True, resolve_path=True)
+                    typ = click.Path(exists=exists, dir_okay=False, readable=True, resolve_path=True)
                 elif metadata.get('dir', False):
-                    typ = click.Path(exists=True, file_okay=False, readable=True, resolve_path=True)
+                    typ = click.Path(exists=exists, file_okay=False, readable=True, resolve_path=True)
             elif typ == list[str]:
                 typ = DelimitedList()
                 extra_help = ' (comma-separated list)'
@@ -191,7 +192,7 @@ class DarcyParams(JsonParams):
     )
     output_dir: str = field(
         default='output',
-        metadata={'help': 'Output directory', 'group': 'IO', 'dir': True}
+        metadata={'help': 'Output directory', 'group': 'IO', 'dir': True, 'exists': False}
     )
 
     # Mesh dimensions (m)
