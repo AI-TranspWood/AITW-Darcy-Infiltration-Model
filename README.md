@@ -4,7 +4,8 @@ This project contains code for simulating infiltration processes in porous mater
 
 ## Install
 
-> [!NOTE] External Requirements
+> [!NOTE]
+> External Requirements
 > Requires a working installation of `fenics-dolfinx==0.9.0` (see https://fenicsproject.org/download/) -
 > Main FEniCS library + Python bindings.
 
